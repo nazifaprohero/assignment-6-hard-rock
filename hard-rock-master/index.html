@@ -54,7 +54,7 @@
                 </div>
             </div>
              <!-- === Simple results === -->
-             <div class="d-flex justify-content-center">
+             <div id="simple-result" class="d-flex justify-content-center">
                 <div id="result" class="">
                     <p class="author lead"><strong>Purple Noon</strong> Album by <span>Washed Out</span> <button class="btn btn-success">Get Lyrics</button></p>
                     <p class="author lead"><strong>Purple Noon</strong> Album by <span>Washed Out</span> <button class="btn btn-success">Get Lyrics</button></p>
@@ -165,7 +165,7 @@
                 </pre>
             </div>   
              <!-- === Fancy results === -->
-         <div class="search-result col-md-8 mx-auto py-4">
+         <div id="fancy-part" class="search-result col-md-8 mx-auto py-4">
             <!-- single result -->
         <div>
         <div class="single-result row align-items-center my-3 p-3">
@@ -182,7 +182,7 @@
         <!-- single result -->
         <div class="single-result row align-items-center my-3 p-3">
             <div class="col-md-9">
-                <h3  id="" class="lyrics-name">Purple Noon</h3>
+                <h3   class="lyrics-name">Purple Noon</h3>
                 <p class="author lead">Album by <span id="artist-name" >Washed Out</span></p>
             </div>
             <div class="col-md-3 text-md-right text-center">
@@ -193,7 +193,7 @@
         <!-- single result -->
         <div class="single-result row align-items-center my-3 p-3">
             <div class="col-md-9">
-                <h3  id="" class="lyrics-name">Purple Noon</h3>
+                <h3   class="lyrics-name">Purple Noon</h3>
                 <p class="author lead">Album by <span id="artist-name" >Washed Out</span></p>
             </div>
             <div class="col-md-3 text-md-right text-center">
@@ -204,21 +204,15 @@
         <!-- single result -->
         <div class="single-result row align-items-center my-3 p-3">
             <div class="col-md-9">
-                <h3  id="" class="lyrics-name">Purple Noon</h3>
+                <h3   class="lyrics-name">Purple Noon</h3>
                 <p class="author lead">Album by <span id="artist-name" >Washed Out</span></p>
             </div>
             <div class="col-md-3 text-md-right text-center">
                 <button  class="btn btn-success">Get Lyrics</button>
             </div>
         </div>
-    </div>
- 
-    <!-- ./ single result -->   
-
-  
-
-
-            </div>
+    </div>  
+ </div>
         </main>
     </div>
     <!-- Optional JavaScript -->
@@ -229,6 +223,11 @@
 
     <!-- Custom Script Here -->
      <script>
+         document.getElementById("fancy-part").style.display="none";
+         document.getElementById("lyrics-display").style.display="none";
+         document.getElementById("result").style.display="none";
+
+
          document.getElementById("button").addEventListener("click", function(){
              const songName= document.getElementById("search-song").value;
              fetch(`https://api.lyrics.ovh/suggest/${songName}`)
@@ -244,38 +243,37 @@
                  const element = songs.data[i];
                  const title= element.album.title;
                  const artist= element.artist.name;
+                 const lyrics= element.lyrics;
                  const child=` <div class="single-result row align-items-center my-3 p-3">
                                  <div class="col-md-9">
                                     <h3  id="" class="lyrics-name">${title}</h3>
                                     <p class="author lead">Album by <span id="artist-name" >${artist}</span></p>
                                 </div>
                                 <div class="col-md-3 text-md-right text-center">
-                                     <button id="get-lyrics"  class="btn btn-success">Get Lyrics</button>
+                                     <button class="btn btn-success" onclick ="getLyrics(${lyrics})">Get Lyrics</button>
                                 </div>
                                 </div>`;
                 result.innerHTML += child;
+                document.getElementById("result").style.display="block";
+                
              }
  }
-             result.addEventListener('click', function(event){
-             const clickedElement = event.target;
-             const songName= document.getElementById("search-song").value;
-             fetch(`https://api.lyrics.ovh/suggest/${songName}${title}${artist}${lyrics}`)
-             .then (Response => Response.json())
-             .then(data => getLyrics(data))
+           
+ function getLyrics(lyrics){
+    const songName= document.getElementById("search-song").value;
+     fetch(`https://api.lyrics.ovh/suggest/${songName}`)
+     .then(res => res.json())
+     .then(data =>{
+         console.log(data)
+         const lyricsDisplay = document.getElementById("lyrics-display");
+         lyricsDisplay.innerHTML = `<h2><strong>${data.title}</strong>${data.artist}</h2>
+                                     <p>${data.lyrics}</p>`
+         document.getElementById("lyrics-display").style.display="block";
 
-         })
- function getLyrics(data){
-     const Title = data.album.title;
-     const Artist = data.artist.name;
-     const Lyrics = data.lyrics.replace(/(\r\n|\r|\n)/g, '<br>');
-    result.innerHTML = `<h2><strong>${Title}</strong> - ${Artist}</h2>
-      <p>${Lyrics}</p>`;
-     
+     })   
  }
 
-</script>
- 
-    
+</script> 
 </body>
 
 </html>
